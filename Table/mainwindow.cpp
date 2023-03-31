@@ -2,15 +2,15 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-//#include "spreadSheet.h"
+#include "spreadSheet.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    //spreadSheet = new SpreadSheet;
-    //setCentralWidget(spreadSheet);
+    spreadSheet = new SpreadSheet;
+    setCentralWidget(spreadSheet);
 
     connect(ui->actionAbout_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 }
