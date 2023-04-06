@@ -2,9 +2,12 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QLabel>
 
 class SpreadSheet;
 class QAction;
+
+class QLabel;
 
 
 namespace Ui {
@@ -26,6 +29,11 @@ private:
     QAction *recentFilesActions[maxRecentFile];
     QAction *addSeparator;
 
+    QLabel *locationLabel;
+    QLabel *formulaLabel;
+    void createStatusBar();
+
+
 private slots:
     void newFile();
     void open();
@@ -36,6 +44,9 @@ private slots:
     void about();
     void aboutQt();
     void sort();
+
+    void updateStatusBar();
+    void spreadSheetModified();
 };
 
 #endif // MAINWINDOW_H
