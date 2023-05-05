@@ -14,7 +14,6 @@ public:
     SpreadSheet(QTableWidget *parent = nullptr);
     ~SpreadSheet();
 
-    //bool autoRecalculate() const {return autoRecalc;}
     QString currentLocation();
     QString currentFormula();
     QTableWidgetSelectionRange selectedRange() const;
@@ -27,17 +26,16 @@ public:
     void sort(SpreadSheetCompare &compare);
 
 public slots:
-    /*
+
     void cut();
     void copy();
     void paste();
     void del();
-    void selectRow();
-    void selectColumn();
-    void selectAll();
+    void selectCurrentRow();
+    void selectCurrentColumn();
     void recalculate();
     void setAutoRecalculate(bool on);
-    */
+
     void findNext(const QString &str, Qt::CaseSensitivity cs);
     void findPrev(const QString &str, Qt::CaseSensitivity cs);
 

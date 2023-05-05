@@ -17,25 +17,34 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     spreadSheet = new SpreadSheet;
     setCentralWidget(spreadSheet);
-
-    connect(ui->actionAbout_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
-
+    setCurrentFile("");
     createStatusBar();
     createContextMenu();
-    setCurrentFile("");
-
-    connect(ui->action_New, SIGNAL(triggered()),this,SLOT(newFile()));
-    connect(ui->action_Save, SIGNAL(triggered()),this,SLOT(save()));
-
     createActions();
     createMenus();
+    readSettings();
 
+    connect(ui->actionAbout_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
+    connect(ui->action_New, SIGNAL(triggered()),this,SLOT(newFile()));
+    connect(ui->action_Save, SIGNAL(triggered()),this,SLOT(save()));
     connect(ui->action_Open, SIGNAL(triggered()),this,SLOT(open()));
     connect(actionExit, SIGNAL(triggered()),this,SLOT(close()));
-
+    connect(actionClose,SIGNAL(triggered()),qApp,SLOT(closeAllWindows()));
     connect(ui->actionFind, SIGNAL(triggered()),this,SLOT(find()));
     connect(ui->actionGo_to_Cell, SIGNAL(triggered()),this, SLOT(goToCell()));
     connect(ui->actionSort,SIGNAL(triggered()),this,SLOT(sort()));
+    connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(about()));
+
+    //Раздел Edit
+    connect(ui->action_Copy,SIGNAL(triggered()),spreadSheet,SLOT(copy()));
+    connect(ui->action_Paste,SIGNAL(triggered()),spreadSheet,SLOT(paste()));
+    connect(ui->action_Delete,SIGNAL(triggered()),spreadSheet,SLOT(del()));
+    connect(ui->action_Cut,SIGNAL(triggered()),spreadSheet,SLOT(cut()));
+    connect(ui->actionColumn,SIGNAL(triggered()),spreadSheet,SLOT(selectCurrentColumn()));
+    connect(ui->actionRow,SIGNAL(triggered()),spreadSheet,SLOT(selectCurrentRow()));
+    connect(ui->actionAll,SIGNAL(triggered()),spreadSheet,SLOT(selectAll()));
+    connect(ui->actionRecalculate,SIGNAL(triggered()),spreadSheet,SLOT(recalculate()));
+    connect(ui->actionAuto_recalculate,SIGNAL(toggled(bool)),spreadSheet,SLOT(setAutoRecalculate(bool)));
 }
 
 void MainWindow::createStatusBar()
@@ -69,11 +78,15 @@ MainWindow::~MainWindow()
 }
 void MainWindow::newFile()
 {
+    /*
     if (okToContinue())
     {
         spreadSheet->clear();
         setCurrentFile("");
     }
+    */
+    MainWindow *mainwindow = new MainWindow;
+    mainwindow->show();
 }
 bool MainWindow::okToContinue()
 {
@@ -152,6 +165,11 @@ void MainWindow::createActions()
     }
     actionExit = new QAction(this);
     actionExit->setText("Exit");
+    actionClose = new QAction(this);
+    actionClose->setText("Close");
+
+    ui->actionShow_grid->setChecked(spreadSheet->showGrid());
+    connect(ui->actionShow_grid, SIGNAL(toggled(bool)),spreadSheet,SLOT(setShowGrid(bool)));
 }
 void MainWindow::createMenus()
 {
@@ -162,6 +180,7 @@ void MainWindow::createMenus()
     }
     ui->menuFile->addSeparator();
     ui->menuFile->addAction(actionExit);
+    ui->menuFile->addAction(actionClose);
 }
 void MainWindow::open()
 {
@@ -238,7 +257,27 @@ void MainWindow::closeEvent(QCloseEvent *event)
 }
 void MainWindow::writeSettings()
 {
+    QSettings settings("Software Inc.","Spreadsheet");
+    settings.setValue("geometry", geometry());
+    settings.setValue("recentFiles", recentFiles);
+    settings.setValue("showGrid", ui->actionShow_grid->isChecked());
+    settings.setValue("autoRecalc", ui->actionAuto_recalculate->isChecked());
+}
+void MainWindow::readSettings()
+{
+    QSettings settings("Software Inc.","Spreadsheet");
+    QRect rect = settings.value("geometry", QRect(200,200,400,400)).toRect();
+    move(rect.topLeft());
+    resize(rect.size());
 
+    recentFiles = settings.value("recentFiles").toStringList();
+    updateRecentFileActions();
+
+    bool showGrid = settings.value("showGrid",true).toBool();
+    ui->actionShow_grid->setChecked(showGrid);
+
+    bool autoRecalc = settings.value("autoRecalc",true).toBool();
+    ui->actionAuto_recalculate->setChecked(autoRecalc);
 }
 void MainWindow::find()
 {
@@ -261,11 +300,19 @@ void MainWindow::goToCell()
 
 void MainWindow::about()
 {
+    QMessageBox::about(this, tr("About SpreadSheet"),
 
-}
-void MainWindow::aboutQt()
-{
+    tr("<h2>SpreadSheet 1.1</h2>"
 
+    "<p>Copyright &copy; 2003 Software Inc."
+
+    "<p>Spreadsheet is a small application that "
+
+    "demonstrates <b>QAction</b>, <b>QMainWindow</b>, "
+
+    "<b>QMenuBar</b>, <b>QStatusBar</b>, "
+
+    "<b>QToolBar</b>, and many other Qt classes."));
 }
 
 void MainWindow::sort()

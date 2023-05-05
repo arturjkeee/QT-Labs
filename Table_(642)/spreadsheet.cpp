@@ -12,7 +12,7 @@ SpreadSheet::SpreadSheet(QTableWidget *parent)
     autoRecalc = true;
     setItemPrototype(new Cell);
     setSelectionMode(ContiguousSelection);
-
+    QAbstractItemView::ContiguousSelection;
     connect(this, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(someThingChanged()));
     clear();
 }
@@ -222,6 +222,7 @@ void SpreadSheet::sort(SpreadSheetCompare &compare)
     clearSelection();
     someThingChanged();
 }
+
 bool SpreadSheetCompare::operator()(const QStringList &row1, const QStringList &row2) const
 {
     for (int i = 0; i< NumKeys; i++)
@@ -243,4 +244,85 @@ bool SpreadSheetCompare::operator()(const QStringList &row1, const QStringList &
         }
     }
     return false;
+}
+void SpreadSheet::cut()
+{
+    copy();
+    del();
+}
+void SpreadSheet::copy()
+{
+    QTableWidgetSelectionRange range = selectedRange();
+    QString str;
+    for (int i = 0; i<range.rowCount();++i)
+    {
+        if (i>0) str += "\n";
+        for (int j=0;j<range.columnCount();++j)
+        {
+            if(j>0) str +="\t";
+            str += formula(range.topRow()+i, range.leftColumn()+j);
+        }
+    }
+    QApplication::clipboard()->setText(str);
+}
+void SpreadSheet::paste()
+{
+    QTableWidgetSelectionRange range = selectedRange();
+    QString str = QApplication::clipboard()->text();
+    QStringList rows = str.split("\n");
+    int numRows = rows.count();
+    int numColumns = rows.first().count("\t")+1;
+    if (range.rowCount() * range.columnCount() != 1 && (range.rowCount() != numRows || range.columnCount() != numColumns))
+    {
+        QMessageBox::information(this,tr("SpreadSheet"), tr("The information cannot be pasted because the copy "
+                                                            "and paste areas aren't the same size."));
+        return;
+    }
+    for (int i =0;i<numRows;i++)
+    {
+        QStringList columns = rows[i].split("\t");
+        for (int j=0;j<numColumns; ++j)
+        {
+            int row = range.topRow()+i;
+            int column = range.leftColumn()+j;
+            if (row< RowCount && column < ColumnCount)
+            {
+                setFormula(row,column,columns[j]);
+            }
+        }
+    }
+    someThingChanged();
+}
+void SpreadSheet::del()
+{
+    foreach(QTableWidgetItem *item, selectedItems()){
+        delete item;
+    }
+
+}
+void SpreadSheet::selectCurrentRow()
+{
+    selectRow(currentRow());
+}
+void SpreadSheet::selectCurrentColumn()
+{
+    selectColumn(currentColumn());
+}
+void SpreadSheet::recalculate()
+{
+    for (int row =0;row<RowCount;++row)
+    {
+        for(int column=0;column<ColumnCount;++column)
+        {
+            if (cell(row,column))
+            {
+                cell(row,column)->setDirty();
+            }
+        }
+        viewport()->update();
+    }
+}
+void SpreadSheet::setAutoRecalculate(bool on)
+{
+    if (on) recalculate();
 }

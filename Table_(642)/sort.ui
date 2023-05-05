@@ -78,23 +78,13 @@
      <rect>
       <x>70</x>
       <y>31</y>
-      <width>38</width>
+      <width>61</width>
       <height>24</height>
      </rect>
     </property>
     <item>
      <property name="text">
-      <string>A</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>B</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>C</string>
+      <string>Пусто</string>
      </property>
     </item>
    </widget>
@@ -156,17 +146,7 @@
      <widget class="QComboBox" name="thirdColumnBox">
       <item>
        <property name="text">
-        <string>A</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>B</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>C</string>
+        <string>Пусто</string>
        </property>
       </item>
      </widget>
@@ -244,23 +224,13 @@
      <rect>
       <x>70</x>
       <y>31</y>
-      <width>38</width>
+      <width>61</width>
       <height>24</height>
      </rect>
     </property>
     <item>
      <property name="text">
-      <string>A</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>B</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>C</string>
+      <string>Пусто</string>
      </property>
     </item>
    </widget>

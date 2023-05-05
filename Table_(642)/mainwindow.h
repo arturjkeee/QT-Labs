@@ -31,7 +31,7 @@ private:
     QAction *separatorAction;
     QAction *addSeparator;
     QAction *actionExit;
-
+    QAction *actionClose;
     QLabel *locationLabel;
     QLabel *formulaLabel;
     void createStatusBar();
@@ -52,6 +52,7 @@ private:
     void createMenus();
 
     void writeSettings();
+    void readSettings();
 protected:
     void closeEvent(QCloseEvent *event);
 private slots:
@@ -65,7 +66,6 @@ private slots:
     void goToCell();
 
     void about();
-    void aboutQt();
     void sort();
 
     void updateStatusBar();
